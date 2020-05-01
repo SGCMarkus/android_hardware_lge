@@ -1,0 +1,10 @@
+on init
+    exec -- /system/bin/chown system:system /sys/bus/i2c/drivers/es9218-codec/*/avc_volume
+    exec -- /system/bin/chmod 0660 /sys/bus/i2c/drivers/es9218-codec/*/avc_volume
+    exec -- /system/bin/chown system:system /sys/bus/i2c/drivers/es9218-codec/*/headset_type
+    exec -- /system/bin/chmod 0660 /sys/bus/i2c/drivers/es9218-codec/*/headset_type
+
+service lge-dac-control-1-0 /system/bin/hw/lge.hardware.audio.dac.control@1.0-service
+    class hal
+    user system
+    group system

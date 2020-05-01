@@ -1,0 +1,29 @@
+cc_binary {
+    name: "lge.hardware.audio.dac.control@1.0-service",
+    init_rc: ["lge.hardware.audio.dac.control@1.0-service.rc"],
+    defaults: ["hidl_defaults"],
+    relative_install_path: "hw",
+
+    srcs: [
+        "DacAdvancedControl.cpp",
+        "DacHalControl.cpp",
+        "service.cpp",
+    ],
+
+    shared_libs: [
+        "libbase",
+        "libbinder",
+        "libcutils",
+        "libhidlbase",
+        "libhidltransport",
+        "libutils",
+        "libaudiohal",
+        "android.hardware.audio@2.0",
+        "vendor.lge.hardware.audio.dac.control@1.0",
+    ],
+
+    static_libs: [
+        "libc++fs",
+    ],
+
+}
