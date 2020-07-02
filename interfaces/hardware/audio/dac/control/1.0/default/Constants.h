@@ -31,6 +31,9 @@
 #define PROPERTY_HIFI_DAC_MODE             "persist.vendor.lge.audio.hifi_dac.mode"
 #define PROPERTY_HIFI_DAC_AVC_VOLUME       "persist.vendor.lge.audio.hifi_dac.avc_volume"
 
+#define PROPERTY_VALUE_HIFI_DAC_ENABLED    "ON"
+#define PROPERTY_VALUE_HIFI_DAC_DISABLED   "OFF"
+
 /* Defaults */
 #define AVC_VOLUME_DEFAULT                 -14
 #define HIFI_MODE_DEFAULT                  0

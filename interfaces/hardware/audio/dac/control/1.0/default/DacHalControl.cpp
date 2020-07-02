@@ -185,7 +185,15 @@ Return<bool> DacHalControl::setFeatureValue(HalFeature feature, int32_t value) {
     android::status_t ret = mAudioDevice->setParameters(command);
 
     if(ret == android::OK) {
-        property_set(property.c_str(), kv.value.c_str());
+        if(feature == HalFeature::QuadDAC) {
+            if(value == 0) {
+                property_set(property.c_str(), PROPERTY_VALUE_HIFI_DAC_DISABLED);
+            } else if(value == 1) {
+                property_set(property.c_str(), PROPERTY_VALUE_HIFI_DAC_ENABLED);
+            }
+        } else {
+            property_set(property.c_str(), kv.value.c_str());
+        }
         return true;
     } else {
         return false;
