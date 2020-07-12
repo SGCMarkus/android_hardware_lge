@@ -1,8 +1,53 @@
 on init
-    exec -- /system/bin/chown system:system /sys/bus/i2c/drivers/es9218-codec/*/avc_volume
-    exec -- /system/bin/chmod 0660 /sys/bus/i2c/drivers/es9218-codec/*/avc_volume
-    exec -- /system/bin/chown system:system /sys/bus/i2c/drivers/es9218-codec/*/headset_type
-    exec -- /system/bin/chmod 0660 /sys/bus/i2c/drivers/es9218-codec/*/headset_type
+    chown system system /sys/bus/i2c/drivers/es9218-codec/0-0048/avc_volume
+    chmod 0660 /sys/bus/i2c/drivers/es9218-codec/0-0048/avc_volume
+    chown system system /sys/bus/i2c/drivers/es9218-codec/0-0048/headset_type
+    chmod 0660 /sys/bus/i2c/drivers/es9218-codec/0-0048/headset_type
+
+    chown system system /sys/bus/i2c/drivers/es9218-codec/1-0048/avc_volume
+    chmod 0660 /sys/bus/i2c/drivers/es9218-codec/1-0048/avc_volume
+    chown system system /sys/bus/i2c/drivers/es9218-codec/1-0048/headset_type
+    chmod 0660 /sys/bus/i2c/drivers/es9218-codec/1-0048/headset_type
+
+    chown system system /sys/bus/i2c/drivers/es9218-codec/2-0048/avc_volume
+    chmod 0660 /sys/bus/i2c/drivers/es9218-codec/2-0048/avc_volume
+    chown system system /sys/bus/i2c/drivers/es9218-codec/2-0048/headset_type
+    chmod 0660 /sys/bus/i2c/drivers/es9218-codec/2-0048/headset_type
+    
+    chown system system /sys/bus/i2c/drivers/es9218-codec/3-0048/avc_volume
+    chmod 0660 /sys/bus/i2c/drivers/es9218-codec/3-0048/avc_volume
+    chown system system /sys/bus/i2c/drivers/es9218-codec/3-0048/headset_type
+    chmod 0660 /sys/bus/i2c/drivers/es9218-codec/3-0048/headset_type
+    
+    chown system system /sys/bus/i2c/drivers/es9218-codec/4-0048/avc_volume
+    chmod 0660 /sys/bus/i2c/drivers/es9218-codec/4-0048/avc_volume
+    chown system system /sys/bus/i2c/drivers/es9218-codec/4-0048/headset_type
+    chmod 0660 /sys/bus/i2c/drivers/es9218-codec/4-0048/headset_type
+    
+    chown system system /sys/bus/i2c/drivers/es9218-codec/5-0048/avc_volume
+    chmod 0660 /sys/bus/i2c/drivers/es9218-codec/5-0048/avc_volume
+    chown system system /sys/bus/i2c/drivers/es9218-codec/5-0048/headset_type
+    chmod 0660 /sys/bus/i2c/drivers/es9218-codec/5-0048/headset_type
+    
+    chown system system /sys/bus/i2c/drivers/es9218-codec/6-0048/avc_volume
+    chmod 0660 /sys/bus/i2c/drivers/es9218-codec/6-0048/avc_volume
+    chown system system /sys/bus/i2c/drivers/es9218-codec/6-0048/headset_type
+    chmod 0660 /sys/bus/i2c/drivers/es9218-codec/6-0048/headset_type
+    
+    chown system system /sys/bus/i2c/drivers/es9218-codec/7-0048/avc_volume
+    chmod 0660 /sys/bus/i2c/drivers/es9218-codec/7-0048/avc_volume
+    chown system system /sys/bus/i2c/drivers/es9218-codec/7-0048/headset_type
+    chmod 0660 /sys/bus/i2c/drivers/es9218-codec/7-0048/headset_type
+    
+    chown system system /sys/bus/i2c/drivers/es9218-codec/8-0048/avc_volume
+    chmod 0660 /sys/bus/i2c/drivers/es9218-codec/8-0048/avc_volume
+    chown system system /sys/bus/i2c/drivers/es9218-codec/8-0048/headset_type
+    chmod 0660 /sys/bus/i2c/drivers/es9218-codec/8-0048/headset_type
+    
+    chown system system /sys/bus/i2c/drivers/es9218-codec/9-0048/avc_volume
+    chmod 0660 /sys/bus/i2c/drivers/es9218-codec/9-0048/avc_volume
+    chown system system /sys/bus/i2c/drivers/es9218-codec/9-0048/headset_type
+    chmod 0660 /sys/bus/i2c/drivers/es9218-codec/9-0048/headset_type
 
 on property:sys.boot_completed=1
     start lge-dac-control-1-0
