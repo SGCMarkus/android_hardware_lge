@@ -47,15 +47,6 @@ static void set(const std::string& path, const T& value) {
     file << value;
 }
 
-template <typename T>
-static T get(const std::string& path, const T& def) {
-    std::ifstream file(path);
-    T result;
-
-    file >> result;
-    return file.fail() ? def : result;
-}
-
 DacAdvancedControl::DacAdvancedControl() {
     
     for(const auto & entry : std::filesystem::directory_iterator(COMMON_ES9218_PATH)) {
@@ -71,8 +62,6 @@ DacAdvancedControl::DacAdvancedControl() {
     if(mDacBasePath.empty()) {
         LOG(ERROR) << "DacAdvancedControl: No ES9218 path found, exiting...";
         return;
-    } else {
-        LOG(INFO) << "DacAdvancedControl: mDacBasePath: " << mDacBasePath;
     }
 
     avcPath = std::string(mDacBasePath);
@@ -81,13 +70,11 @@ DacAdvancedControl::DacAdvancedControl() {
     hifiPath.append(HIFI_MODE);
 
     if (std::filesystem::exists(avcPath)) {
-        LOG(INFO) << "DacAdvancedControl: add avc feature";
         mSupportedAdvancedFeatures.push_back(AdvancedFeature::AVCVolume);
         writeAvcVolumeState(getAvcVolumeState());
     }
     
     if (std::filesystem::exists(hifiPath)) {
-        LOG(INFO) << "DacAdvancedControl: add hifi feature";
         mSupportedAdvancedFeatures.push_back(AdvancedFeature::HifiMode);
         writeHifiModeState(getHifiModeState());
     }
@@ -159,7 +146,6 @@ Return<bool> DacAdvancedControl::setFeatureValue(AdvancedFeature feature, int32_
     bool feature_available = false;
     for(AdvancedFeature f : mSupportedAdvancedFeatures) {
         if(f == feature) {
-            LOG(INFO) << "DacAdvancedControl: setFeatureValue: feature found";
             feature_available = true;
             break;
         }
@@ -195,7 +181,6 @@ Return<int32_t> DacAdvancedControl::getFeatureValue(AdvancedFeature feature) {
     bool feature_available = false;
     for(AdvancedFeature f : mSupportedAdvancedFeatures) {
         if(f == feature) {
-            LOG(INFO) << "DacAdvancedControl: getFeatureValue: feature found";
             feature_available = true;
             break;
         }
