@@ -18,14 +18,11 @@
 #define VENDOR_LGE_HARDWARE_AUDIO_DAC_CONTROL_V1_0_DACHALCONTROL_H
 
 #include <vendor/lge/hardware/audio/dac/control/1.0/IDacHalControl.h>
-//#include <android/hardware/audio/2.0/IDevice.h>
-//#include <android/hardware/audio/2.0/IDevicesFactory.h>
 
 #include <media/audiohal/DevicesFactoryHalInterface.h>
 #include <media/audiohal/DeviceHalInterface.h>
 
 #include <unordered_set>
-//#include <utils/Errors.h>
 
 #include "Constants.h"
 
@@ -42,8 +39,6 @@ using ::android::hardware::hidl_string;
 using ::android::hardware::hidl_vec;
 using ::android::hardware::Return;
 using ::android::hardware::Void;
-//using ::android::hardware::audio::V2_0::ParameterValue;
-//using ::android::
 using ::vendor::lge::hardware::audio::dac::control::V1_0::HalFeature;
 using ::vendor::lge::hardware::audio::dac::control::V1_0::FeatureStates;
 using ::vendor::lge::hardware::audio::dac::control::V1_0::FeatureState;

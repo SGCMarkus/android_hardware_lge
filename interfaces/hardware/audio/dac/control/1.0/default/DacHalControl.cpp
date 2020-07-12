@@ -55,15 +55,12 @@ DacHalControl::DacHalControl() {
         return;
     }
 
-    LOG(INFO) << "DAC Control HAL: created DevicesFactoryHalInterface";
-
     mAudioDevicesFactory->openDevice("primary", &mAudioDevice);
 
     if(mAudioDevice == nullptr) {
         LOG(ERROR) << "mAudioDevice null, aborting";
         return;
     }
-    LOG(INFO) << "DAC Control HAL: opened primary audio device";
 
     /* Quad DAC */
     mSupportedHalFeatures.push_back(HalFeature::QuadDAC);
@@ -113,10 +110,8 @@ Return<void> DacHalControl::getSupportedHalFeatures(getSupportedHalFeatures_cb _
     
     std::vector<HalFeature> ret;
     for(auto entry : mSupportedHalFeatures) {
-        LOG(INFO) << "DacHalControl::getSupportedHalFeatures: feature: " << std::to_string(static_cast<int32_t>(entry));
         ret.push_back(entry);
     }
-    LOG(INFO) << "DacHalControl::getSupportedHalFeatures: size: " << std::to_string(static_cast<int32_t>(ret.size()));
     _hidl_cb(ret);
     
     return Void();
@@ -181,7 +176,6 @@ Return<bool> DacHalControl::setFeatureValue(HalFeature feature, int32_t value) {
     command.append(kv.name.c_str());
     command.append("=");
     command.append(kv.value.c_str());
-    LOG(INFO) << "DacHalControl::setFeatureValue: command: " << command.string();
     android::status_t ret = mAudioDevice->setParameters(command);
 
     if(ret == android::OK) {
@@ -211,9 +205,9 @@ Return<int32_t> DacHalControl::getFeatureValue(HalFeature feature) {
     if(feature == HalFeature::QuadDAC) {
         property = PROPERTY_HIFI_DAC_ENABLED;
         property_get(property.c_str(), value, "off");
-        if(strcmp(value, "off") == 0) {
+        if(strcmp(value, PROPERTY_VALUE_HIFI_DAC_DISABLED) == 0) {
             ret = 0;
-        } else if(strcmp(value, "on") == 0) {
+        } else if(strcmp(value, PROPERTY_VALUE_HIFI_DAC_ENABLED) == 0) {
             ret = 1;
         } else {
             ret = 0;
