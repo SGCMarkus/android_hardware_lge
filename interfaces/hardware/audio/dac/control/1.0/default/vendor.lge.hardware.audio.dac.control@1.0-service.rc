@@ -50,9 +50,9 @@ on init
     chmod 0660 /sys/bus/i2c/drivers/es9218-codec/9-0048/headset_type
 
 on property:sys.boot_completed=1
-    start lge-dac-control-1-0
+    start vendor.lge-dac-control-1-0
 
-service lge-dac-control-1-0 /system/bin/hw/lge.hardware.audio.dac.control@1.0-service
+service vendor.lge-dac-control-1-0 /vendor/bin/hw/vendor.lge.hardware.audio.dac.control@1.0-service
     class hal
     user system
     group system
