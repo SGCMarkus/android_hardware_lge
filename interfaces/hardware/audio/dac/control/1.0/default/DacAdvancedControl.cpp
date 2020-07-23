@@ -16,12 +16,13 @@
 
 #include "DacAdvancedControl.h"
 
+#include <dirent.h>
+
 #include <android-base/logging.h>
 #include <android-base/file.h>
 #include <cutils/properties.h>
 
 #include <algorithm>
-#include <filesystem>
 #include <fstream>
 #include <string>
 
@@ -48,17 +49,16 @@ static void set(const std::string& path, const T& value) {
 }
 
 DacAdvancedControl::DacAdvancedControl() {
-    
-    for(const auto & entry : std::filesystem::directory_iterator(COMMON_ES9218_PATH)) {
-        // There should only be 1 subdirectory, but check anyway
-        if(entry.is_directory()) {
-            if(entry.path().string().find("0048") != std::string::npos) {
-                mDacBasePath = entry.path().string();
-                break;
-            }
+    DIR* dir;
+    for(int i = 0; i < 10; i++) {
+        std::string tmp = COMMON_ES9218_PATH + std::to_string(i) + "-0048/";
+        if( (dir = opendir(tmp.c_str())) != NULL) {
+            mDacBasePath.append(tmp);
+            closedir(dir);
+            break;
         }
+        closedir(dir);
     }
-    
     if(mDacBasePath.empty()) {
         LOG(ERROR) << "DacAdvancedControl: No ES9218 path found, exiting...";
         return;
@@ -69,16 +69,16 @@ DacAdvancedControl::DacAdvancedControl() {
     hifiPath = std::string(mDacBasePath);
     hifiPath.append(HIFI_MODE);
 
-    if (std::filesystem::exists(avcPath)) {
+    struct stat buffer;
+    if(stat(avcPath.c_str(), &buffer) == 0) {
         mSupportedAdvancedFeatures.push_back(AdvancedFeature::AVCVolume);
         writeAvcVolumeState(getAvcVolumeState());
     }
-    
-    if (std::filesystem::exists(hifiPath)) {
+
+    if(stat(hifiPath.c_str(), &buffer) == 0) {
         mSupportedAdvancedFeatures.push_back(AdvancedFeature::HifiMode);
         writeHifiModeState(getHifiModeState());
     }
-
 }
 
 Return<void> DacAdvancedControl::getSupportedAdvancedFeatures(getSupportedAdvancedFeatures_cb _hidl_cb) {

@@ -47,20 +47,93 @@ static std::vector<KeyValue> digital_filters = {{"Short", "0"},
                                                 {"Sharp", "1"},
                                                 {"Slow", "2"}};
 
+
+
 DacHalControl::DacHalControl() {
-    mAudioDevicesFactory = android::DevicesFactoryHalInterface::create();
-    
-    if(mAudioDevicesFactory == nullptr) {
-        LOG(ERROR) << "mAudioDevicesFactory null, aborting";
-        return;
+    mAudioDevicesFactory_V5_0 = ::android::hardware::audio::V5_0::IDevicesFactory::getService();
+
+    if(mAudioDevicesFactory_V5_0 == nullptr) {
+        LOG(INFO) << "mAudioDevicesFactory_V5_0 null, trying V4_0";
+        mAudioDevicesFactory_V4_0 = ::android::hardware::audio::V4_0::IDevicesFactory::getService();
+
+        if(mAudioDevicesFactory_V4_0 == nullptr) {
+            LOG(INFO) << "mAudioDevicesFactory_V4_0 null, trying V2_0";
+            mAudioDevicesFactory_V2_0 = ::android::hardware::audio::V2_0::IDevicesFactory::getService();
+
+            if(mAudioDevicesFactory_V2_0 == nullptr) {
+                LOG(INFO) << "mAudioDevicesFactory_V2_0 null, aborting";
+                return;
+            } else {
+                usedVersion = AudioVersion::V2_0;
+            }
+        } else {
+            usedVersion = AudioVersion::V4_0;
+        }
+    } else {
+        usedVersion = AudioVersion::V5_0;
     }
 
-    mAudioDevicesFactory->openDevice("primary", &mAudioDevice);
+    switch(usedVersion) {
+        case AudioVersion::V5_0: {
+                std::function<void(::android::hardware::audio::V5_0::Result,
+                    const android::sp<::android::hardware::audio::V5_0::IDevice>&)> openDevice_cb_V5_0 = [this](::android::hardware::audio::V5_0::Result result,
+                                                                    const android::sp<::android::hardware::audio::V5_0::IDevice>& device)
+                    {
+                        if(result == ::android::hardware::audio::V5_0::Result::OK) {
+                            this->mAudioDevice_V5_0 = device;
+                        } else {
+                            LOG(INFO) << "Couldnt open primary audio device";
+                        }
+                    };
+                mAudioDevicesFactory_V5_0->openDevice("primary", openDevice_cb_V5_0);
 
-    if(mAudioDevice == nullptr) {
-        LOG(ERROR) << "mAudioDevice null, aborting";
-        return;
+                if(mAudioDevice_V5_0 == nullptr) {
+                    LOG(INFO) << "mAudioDevice_V5_0 null, aborting";
+                    return;
+                }
+            }
+            break;
+        case AudioVersion::V4_0: {
+                std::function<void(::android::hardware::audio::V4_0::Result,
+                    const android::sp<::android::hardware::audio::V4_0::IDevice>&)> openDevice_cb_V4_0 = [this](::android::hardware::audio::V4_0::Result result,
+                                                                    const android::sp<::android::hardware::audio::V4_0::IDevice>& device)
+                    {
+                        if(result == ::android::hardware::audio::V4_0::Result::OK) {
+                            this->mAudioDevice_V4_0 = device;
+                        } else {
+                            LOG(INFO) << "Couldnt open primary audio device";
+                        }
+                    };
+                mAudioDevicesFactory_V4_0->openDevice("primary", openDevice_cb_V4_0);
+
+                if(mAudioDevice_V4_0 == nullptr) {
+                    LOG(INFO) << "mAudioDevice_V4_0 null, aborting";
+                    return;
+                }
+            }
+            break;
+        case AudioVersion::V2_0: {
+                std::function<void(::android::hardware::audio::V2_0::Result,
+                    const android::sp<::android::hardware::audio::V2_0::IDevice>&)> openDevice_cb_V2_0 = [this](::android::hardware::audio::V2_0::Result result,
+                                                                    const android::sp<::android::hardware::audio::V2_0::IDevice>& device)
+                    {
+                        if(result == ::android::hardware::audio::V2_0::Result::OK) {
+                            this->mAudioDevice_V2_0 = device;
+                        } else {
+                            LOG(INFO) << "Couldnt open primary audio device";
+                        }
+                    };
+                mAudioDevicesFactory_V2_0->openDevice(::android::hardware::audio::V2_0::IDevicesFactory::Device::PRIMARY, openDevice_cb_V2_0);
+
+                if(mAudioDevice_V2_0 == nullptr) {
+                    LOG(INFO) << "mAudioDevice_V2_0 null, aborting";
+                    return;
+                }
+            }
+            break;
+        default: return; // Should never reach this state
     }
+
 
     /* Quad DAC */
     mSupportedHalFeatures.push_back(HalFeature::QuadDAC);
@@ -172,20 +245,39 @@ Return<bool> DacHalControl::setFeatureValue(HalFeature feature, int32_t value) {
         }
         kv.value = std::to_string(value);
     }
-    android::String8 command;
-    command.append(kv.name.c_str());
-    command.append("=");
-    command.append(kv.value.c_str());
-    android::status_t ret = mAudioDevice->setParameters(command);
+    ::android::hardware::audio::V2_0::Result result_V2_0 = ::android::hardware::audio::V2_0::Result::NOT_SUPPORTED;
+    ::android::hardware::audio::V4_0::Result result_V4_0 = ::android::hardware::audio::V4_0::Result::NOT_SUPPORTED;
+    ::android::hardware::audio::V5_0::Result result_V5_0 = ::android::hardware::audio::V5_0::Result::NOT_SUPPORTED;
 
-    if(ret == android::OK) {
-        if(feature == HalFeature::QuadDAC) {
-            if(value == 0) {
-                property_set(property.c_str(), PROPERTY_VALUE_HIFI_DAC_DISABLED);
-            } else if(value == 1) {
-                property_set(property.c_str(), PROPERTY_VALUE_HIFI_DAC_ENABLED);
+    switch(usedVersion) {
+        case AudioVersion::V5_0: {
+                std::vector<::android::hardware::audio::V5_0::ParameterValue> pv_vec = {{kv.name, kv.value}};
+                hidl_vec<::android::hardware::audio::V5_0::ParameterValue> parameters_V5_0 =
+                        hidl_vec<::android::hardware::audio::V5_0::ParameterValue> {pv_vec};
+                result_V5_0 = mAudioDevice_V5_0->setParameters({}, parameters_V5_0);
             }
-        } else {
+            break;
+        case AudioVersion::V4_0: {
+                std::vector<::android::hardware::audio::V4_0::ParameterValue> pv_vec = {{kv.name, kv.value}};
+                hidl_vec<::android::hardware::audio::V4_0::ParameterValue> parameters_V4_0 =
+                        hidl_vec<::android::hardware::audio::V4_0::ParameterValue> {pv_vec};
+                result_V4_0 = mAudioDevice_V4_0->setParameters({}, parameters_V4_0);
+            }
+            break;
+        case AudioVersion::V2_0: {
+                std::vector<::android::hardware::audio::V2_0::ParameterValue> pv_vec = {{kv.name, kv.value}};
+                hidl_vec<::android::hardware::audio::V2_0::ParameterValue> parameters_V2_0 =
+                        hidl_vec<::android::hardware::audio::V2_0::ParameterValue> {pv_vec};
+                result_V2_0 = mAudioDevice_V2_0->setParameters(parameters_V2_0);
+            }
+            break;
+        default: return false;
+    }
+
+    if(result_V2_0 == ::android::hardware::audio::V2_0::Result::OK ||
+       result_V4_0 == ::android::hardware::audio::V4_0::Result::OK ||
+       result_V5_0 == ::android::hardware::audio::V5_0::Result::OK) {
+        if(feature != HalFeature::QuadDAC) {
             property_set(property.c_str(), kv.value.c_str());
         }
         return true;

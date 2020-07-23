@@ -19,8 +19,8 @@
 
 /* Paths */
 #define COMMON_ES9218_PATH                 "/sys/bus/i2c/drivers/es9218-codec/"
-#define AVC_VOLUME                         "/avc_volume"
-#define HIFI_MODE                          "/headset_type"
+#define AVC_VOLUME                         "avc_volume"
+#define HIFI_MODE                          "headset_type"
 
 /* Properties */
 #define PROPERTY_HIFI_DAC_ENABLED          "persist.vendor.lge.audio.hifi_dac"
