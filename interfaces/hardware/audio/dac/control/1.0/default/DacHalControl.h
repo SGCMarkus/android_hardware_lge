@@ -25,6 +25,8 @@
 #include <android/hardware/audio/4.0/IDevicesFactory.h>
 #include <android/hardware/audio/5.0/IDevice.h>
 #include <android/hardware/audio/5.0/IDevicesFactory.h>
+#include <android/hardware/audio/6.0/IDevice.h>
+#include <android/hardware/audio/6.0/IDevicesFactory.h>
 
 #include <unordered_set>
 
@@ -47,7 +49,7 @@ using ::vendor::lge::hardware::audio::dac::control::V1_0::HalFeature;
 using ::vendor::lge::hardware::audio::dac::control::V1_0::FeatureStates;
 using ::vendor::lge::hardware::audio::dac::control::V1_0::FeatureState;
 
-enum AudioVersion { V2_0, V4_0, V5_0 };
+enum AudioVersion { V2_0, V4_0, V5_0, V6_0 };
 
 class DacHalControl : public IDacHalControl {
   public:
@@ -71,6 +73,8 @@ class DacHalControl : public IDacHalControl {
      android::sp<::android::hardware::audio::V4_0::IDevicesFactory> mAudioDevicesFactory_V4_0;
      android::sp<::android::hardware::audio::V5_0::IDevice> mAudioDevice_V5_0;
      android::sp<::android::hardware::audio::V5_0::IDevicesFactory> mAudioDevicesFactory_V5_0;
+     android::sp<::android::hardware::audio::V6_0::IDevice> mAudioDevice_V6_0;
+     android::sp<::android::hardware::audio::V6_0::IDevicesFactory> mAudioDevicesFactory_V6_0;
 
      AudioVersion usedVersion;
 };
